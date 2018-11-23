@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: myweb
-        image: mohanraz81/webimage:1.0
+        image: mohanraz81/webimage
         ports:
         - containerPort: 80
         resources:
