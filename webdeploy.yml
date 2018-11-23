@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: myweb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: myweb
+  replicas: 2
+  template: 
+    metadata:
+      labels:
+        app: myweb
+    spec:
+      containers:
+      - name: myweb
+        image: mohanraz81/webimage:1.0
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "1"
+            memory: "500Mi"
+          requests:
+            cpu: "0.5"
+            memory: "200Mi"
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myweb-deployment-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myweb-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 70
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: testfrontend
+spec:
+  selector:
+    app: myweb
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+
+
